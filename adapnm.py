@@ -22,7 +22,7 @@ class AdaPNM(Optimizer):
             (default: False)
     """
 
-    def __init__(self, params, lr=1e-2, betas=(0.9, 0.999, 0.5), eps=1e-8,
+    def __init__(self, params, lr=1e-2, betas=(0.9, 0.999, 1.), eps=1e-8,
                  weight_decay=0., amsgrad=False):
         if not 0.0 <= lr:
             raise ValueError("Invalid learning rate: {}".format(lr))
