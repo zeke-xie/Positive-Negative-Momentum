@@ -1,35 +1,36 @@
 
+import math
 import torch
 from torch.optim.optimizer import Optimizer, required
 
-class SGDPNM(Optimizer):
-    r"""Implements Stochastic Gradient Descent with Positive-Negative Momentum (SGDPNM).
+class PNM(Optimizer):
+    r"""Implements Positive-Negative Momentum (PNM).
     It has be proposed in 
-    `A Gradient Noise Amplification Method Improves Learning for Deep Networks`__.
+    `Positive-Negative Momentum: A Noise Enhancement Method for Stochastic Optimization`__.
     Args:
         params (iterable): iterable of parameters to optimize or dicts defining
             parameter groups
         lr (float): learning rate
         betas (Tuple[float, float], optional): inertia coefficients used for computing
-            momentum (default: (0.9, -1.))
+            momentum (default: (0.9, 0.5))
         weight_decay (float, optional): weight decay (L2 penalty) (default: 0)
     """
 
-    def __init__(self, params, lr=required, betas=(0.9, -1.), weight_decay=0):
+    def __init__(self, params, lr=required, betas=(0.9, 1.), weight_decay=0):
         if lr is not required and lr < 0.0:
             raise ValueError("Invalid learning rate: {}".format(lr))
-        if not  0. <= betas[0] < 1.0:
+        if not  0. < betas[0] < 1.0:
             raise ValueError("Invalid beta parameter at index 0: {}".format(betas[0]))
-        if not betas[1] < 0.:
+        if not betas[1] >= 0.:
             raise ValueError("Invalid beta parameter at index 1: {}".format(betas[1]))
         if weight_decay < 0.0:
             raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
 
         defaults = dict(lr=lr, betas=betas, weight_decay=weight_decay)
-        super(SGDPNM, self).__init__(params, defaults)
+        super(PNM, self).__init__(params, defaults)
 
     def __setstate__(self, state):
-        super(SGDPNM, self).__setstate__(state)
+        super(PNM, self).__setstate__(state)
 
     @torch.no_grad()
     def step(self, closure=None):
@@ -45,7 +46,6 @@ class SGDPNM(Optimizer):
 
         for group in self.param_groups:
             beta1, beta2 = group['betas']
-            weight_decay = group['weight_decay']
             
 
             for p in group['params']:
@@ -63,23 +63,21 @@ class SGDPNM(Optimizer):
                     state['step'] = 0
                     
                 state['step'] += 1
-                #bias_correction1 = 1 - beta1 ** ((state['step'] + 1) / 2)
 
                 param_state = self.state[p]
-                if 'momentum_buffer' not in param_state:
-                    buf = param_state['momentum_buffer'] = torch.clone(d_p).detach() * (1 - beta1)
-                    neg_momentum = param_state['neg_momentum_buffer'] = torch.zeros_like(p, memory_format=torch.preserve_format)
+                if state['step'] == 1:
+                    pos_momentum = param_state['pos_momentum'] = torch.zeros_like(p, memory_format=torch.preserve_format)
+                    neg_momentum = param_state['neg_momentum'] = torch.zeros_like(p, memory_format=torch.preserve_format)
                 elif state['step'] % 2 == 1:
-                    buf = param_state['momentum_buffer']
-                    neg_momentum = param_state['neg_momentum_buffer']
-                    buf.mul_(beta1).add_(d_p, alpha=1-beta1)
-                    neg_momentum.mul_(beta1)
+                    pos_momentum = param_state['pos_momentum']
+                    neg_momentum = param_state['neg_momentum']
                 else:
-                    neg_momentum = param_state['momentum_buffer']
-                    buf = param_state['neg_momentum_buffer']
-                    buf.mul_(beta1).add_(d_p, alpha=1-beta1)
-                    neg_momentum.mul_(beta1)
-
-                delta_p = buf.mul(1-beta2/2.).add(neg_momentum, alpha=beta2/2.)
+                    neg_momentum = param_state['pos_momentum']
+                    pos_momentum = param_state['neg_momentum']
+                    
+                pos_momentum.mul_(beta1**2).add_(d_p, alpha=1-beta1**2)
+                noise_norm = math.sqrt((1+beta2) ** 2 + beta2 ** 2)
+                delta_p = pos_momentum.mul(1+beta2).add(neg_momentum, alpha=-beta2).mul(1/noise_norm)
+                
                 p.add_(delta_p, alpha=-group['lr'])
         return loss
