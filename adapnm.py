@@ -11,7 +11,7 @@ class AdaPNM(Optimizer):
     Arguments:
         params (iterable): iterable of parameters to optimize or dicts defining
             parameter groups
-        lr (float, optional): learning rate (default: 1e-2)
+        lr (float, optional): learning rate (default: 1e-3)
         betas (Tuple[float, float], optional): coefficients used for computing
             running averages of gradient and its square (default: (0.9,0.999, 1.))
         eps (float, optional): term added to the denominator to improve
@@ -19,11 +19,11 @@ class AdaPNM(Optimizer):
         weight_decay (float, optional): decoupled weight decay (default: 0.)
         amsgrad (boolean, optional): whether to use the AMSGrad variant of this
             algorithm from the paper `On the Convergence of Adam and Beyond`_
-            (default: False)
+            (default: True)
     """
 
-    def __init__(self, params, lr=1e-2, betas=(0.9, 0.999, 1.), eps=1e-8,
-                 weight_decay=0., amsgrad=False):
+    def __init__(self, params, lr=1e-3, betas=(0.9, 0.999, 1.), eps=1e-8,
+                 weight_decay=0., amsgrad=True):
         if not 0.0 <= lr:
             raise ValueError("Invalid learning rate: {}".format(lr))
         if not 0. < betas[0] < 1.0:
@@ -43,7 +43,7 @@ class AdaPNM(Optimizer):
     def __setstate__(self, state):
         super(AdaPNM, self).__setstate__(state)
         for group in self.param_groups:
-            group.setdefault('amsgrad', False)
+            group.setdefault('amsgrad', True)
 
     @torch.no_grad()
     def step(self, closure=None):
