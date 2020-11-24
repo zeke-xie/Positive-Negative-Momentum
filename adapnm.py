@@ -91,7 +91,7 @@ class AdaPNM(Optimizer):
                 beta1, beta2, beta3 = group['betas']
 
                 state['step'] += 1
-                bias_correction1 = 1 - beta1 ** int((state['step'] + 1) / 2)
+                bias_correction1 = 1 - beta1 ** state['step']
                 bias_correction2 = 1 - beta2 ** state['step']
 
                 exp_avg_sq = state['exp_avg_sq']
