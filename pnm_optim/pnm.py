@@ -12,11 +12,12 @@ class PNM(Optimizer):
             parameter groups
         lr (float): learning rate
         betas (Tuple[float, float], optional): inertia coefficients used for computing
-            momentum (default: (0.9, 0.5))
-        weight_decay (float, optional): weight decay (L2 penalty) (default: 0)
+            pn momentum(default: (0.9, 1.))
+        weight_decay (float, optional): weight decay (default: 0)
+        decoupled (bool, optional): decoupled weight decay or L2 regularization (default: True)
     """
 
-    def __init__(self, params, lr=required, betas=(0.9, 1.), weight_decay=0):
+    def __init__(self, params, lr=required, betas=(0.9, 1.), weight_decay=0, decoupled=True):
         if lr is not required and lr < 0.0:
             raise ValueError("Invalid learning rate: {}".format(lr))
         if not  0. <= betas[0] < 1.0:
@@ -24,7 +25,7 @@ class PNM(Optimizer):
         if weight_decay < 0.0:
             raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
 
-        defaults = dict(lr=lr, betas=betas, weight_decay=weight_decay)
+        defaults = dict(lr=lr, betas=betas, weight_decay=weight_decay, decoupled=decoupled)
         super(PNM, self).__init__(params, defaults)
 
     def __setstate__(self, state):
@@ -51,8 +52,12 @@ class PNM(Optimizer):
                     continue
                 d_p = p.grad
 
-                # Perform decoupled weight decay
-                p.mul_(1 - group['lr'] * group['weight_decay'])
+                # Perform decoupled weight decay or L2 Regularization
+                if group['decoupled']:
+                    p.mul_(1 - group['lr'] * group['weight_decay'])
+                else:
+                    d_p.add_(p.data, alpha=group['weight_decay'])
+
                 
                 state = self.state[p]
                 
