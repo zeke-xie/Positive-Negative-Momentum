@@ -12,18 +12,19 @@ class AdaPNM(Optimizer):
         params (iterable): iterable of parameters to optimize or dicts defining
             parameter groups
         lr (float, optional): learning rate (default: 1e-3)
-        betas (Tuple[float, float], optional): coefficients used for computing
-            running averages of gradient and its square (default: (0.9,0.999, 1.))
+        betas (Tuple[float, float, float], optional): coefficients used for computing
+            running averages of gradient, its square, and pn momentum (default: (0.9,0.999, 1.))
         eps (float, optional): term added to the denominator to improve
             numerical stability (default: 1e-8)
         weight_decay (float, optional): decoupled weight decay (default: 0.)
         amsgrad (boolean, optional): whether to use the AMSGrad variant of this
             algorithm from the paper `On the Convergence of Adam and Beyond`_
-            (default: True)
+            (default: False)
+        decoupled (bool, optional): decoupled weight decay or L2 regularization (default: True)
     """
 
     def __init__(self, params, lr=1e-3, betas=(0.9, 0.999, 1.), eps=1e-8,
-                 weight_decay=0., amsgrad=True):
+                 weight_decay=0., amsgrad=False, decoupled=True):
         if not 0.0 <= lr:
             raise ValueError("Invalid learning rate: {}".format(lr))
         if not 0. <= betas[0] < 1.0:
@@ -35,13 +36,14 @@ class AdaPNM(Optimizer):
         if not 0.0 <= weight_decay:
             raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
         defaults = dict(lr=lr, betas=betas, eps=eps,
-                        weight_decay=weight_decay, amsgrad=amsgrad)
+                        weight_decay=weight_decay, amsgrad=amsgrad, decoupled=decoupled)
         super(AdaPNM, self).__init__(params, defaults)
 
     def __setstate__(self, state):
         super(AdaPNM, self).__setstate__(state)
         for group in self.param_groups:
             group.setdefault('amsgrad', True)
+            group.setdefault('decoupled', False)
 
     @torch.no_grad()
     def step(self, closure=None):
@@ -64,8 +66,11 @@ class AdaPNM(Optimizer):
                 if grad.is_sparse:
                     raise RuntimeError('This optimizer does not support sparse gradients.')
 
-                # Perform decoupled weight decay
-                p.mul_(1 - group['lr'] * group['weight_decay'])
+                # Perform decoupled weight decay or L2 Regularization
+                if group['decoupled']:
+                    p.mul_(1 - group['lr'] * group['weight_decay'])
+                else:
+                    grad.add_(p.data, alpha=group['weight_decay'])
 
                 amsgrad = group['amsgrad']
 
