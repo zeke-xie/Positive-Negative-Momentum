@@ -42,7 +42,7 @@ class AdaPNM(Optimizer):
     def __setstate__(self, state):
         super(AdaPNM, self).__setstate__(state)
         for group in self.param_groups:
-            group.setdefault('amsgrad', True)
+            group.setdefault('amsgrad', False)
             group.setdefault('decoupled', False)
 
     @torch.no_grad()
