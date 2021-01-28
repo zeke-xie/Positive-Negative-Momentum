@@ -6,7 +6,8 @@ from torch.optim.optimizer import Optimizer, required
 class PNM(Optimizer):
     r"""Implements Positive-Negative Momentum (PNM).
     It has be proposed in 
-    `Positive-Negative Momentum: A Noise Enhancement Method for Stochastic Optimization`__.
+    `Positive-Negative Momentum: Manipulating Stochastic Gradient Noise to Improve 
+    Generalization`__.
     Args:
         params (iterable): iterable of parameters to optimize or dicts defining
             parameter groups
