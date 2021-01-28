@@ -7,7 +7,8 @@ from torch.optim.optimizer import Optimizer, required
 class AdaPNM(Optimizer):
     r"""Implements Adaptive Positive-Negative Momentum.
     It has be proposed in 
-    `Positive-Negative Momentum: A Noise Enhancement Method for Stochastic Optimization`__.
+    `Positive-Negative Momentum: Manipulating Stochastic Gradient Noise to Improve 
+    Generalization`__.
     Arguments:
         params (iterable): iterable of parameters to optimize or dicts defining
             parameter groups
@@ -19,12 +20,12 @@ class AdaPNM(Optimizer):
         weight_decay (float, optional): decoupled weight decay (default: 0.)
         amsgrad (boolean, optional): whether to use the AMSGrad variant of this
             algorithm from the paper `On the Convergence of Adam and Beyond`_
-            (default: False)
+            (default: True)
         decoupled (bool, optional): decoupled weight decay or L2 regularization (default: True)
     """
 
     def __init__(self, params, lr=1e-3, betas=(0.9, 0.999, 1.), eps=1e-8,
-                 weight_decay=0., amsgrad=False, decoupled=True):
+                 weight_decay=0., amsgrad=True, decoupled=True):
         if not 0.0 <= lr:
             raise ValueError("Invalid learning rate: {}".format(lr))
         if not 0. <= betas[0] < 1.0:
@@ -42,8 +43,8 @@ class AdaPNM(Optimizer):
     def __setstate__(self, state):
         super(AdaPNM, self).__setstate__(state)
         for group in self.param_groups:
-            group.setdefault('amsgrad', False)
-            group.setdefault('decoupled', False)
+            group.setdefault('amsgrad', True)
+            group.setdefault('decoupled', True)
 
     @torch.no_grad()
     def step(self, closure=None):
