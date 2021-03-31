@@ -4,7 +4,7 @@ The official PyTorch Implementations of Positive-Negative Momentum Optimizers.
 
 # Why Positive-Negative Momentum?
 
-The Positive-Negative Momentum (PNM) approach, which is a powerful alternative to conventional Momentum in classic optimizers, can manipulate stochastic gradient noise for improve generalization.
+It is wellknown that stochastic gradient noise matters a lot to generalization. The Positive-Negative Momentum (PNM) approach, which is a powerful alternative to conventional Momentum in classic optimizers, can manipulate stochastic gradient noise by adjusting the extrahyperparameter.
 
 
 # The environment is as bellow:
