@@ -1,6 +1,9 @@
 # Positive-Negative-Momentum
 The official PyTorch Implementations of Positive-Negative Momentum Optimizers.
 
+The algortihms are proposed in our paper: 
+[Positive-Negative Momentum: Manipulating Stochastic Gradient Noise to Improve Generalization](https://arxiv.org/abs/2103.17182).
+
 
 # Why Positive-Negative Momentum?
 
@@ -38,3 +41,15 @@ PNM versus conventional Momentum. We report the mean and the standard deviations
 |           | DenseNet121 | **19.76**<sub>0.28</sub> | 20.68<sub>0.11</sub> | 19.81<sub>0.33</sub> | 25.11<sub>0.15</sub> | 24.43<sub>0.09</sub> | 21.55<sub>0.14</sub> | 22.69<sub>0.15</sub> | 21.10<sub>0.23</sub> | 22.15<sub>0.36</sub> | 22.27<sub>0.22</sub> |
 |           | GoogLeNet   | 20.38<sub>0.31</sub> | **20.26<sub>**0.21</sub> | 21.21<sub>0.29</sub> | 26.12<sub>0.33</sub> | 25.53<sub>0.17</sub> | 21.29<sub>0.17</sub> | 23.18<sub>0.31</sub> | 21.82<sub>0.17</sub> | 24.24<sub>0.16</sub> | 22.23<sub>0.15</sub> |
 
+# Citing
+
+If you use Positive-Negative Momentum in your work, please cite
+
+```
+@article{xie2021positive,
+  title={Positive-Negative Momentum: Manipulating Stochastic Gradient Noise to Improve Generalization},
+  author={Xie, Zeke and Yuan, li and Zhu, Zhanxing and Sugiyama, Masashi},
+  journal={arXiv preprint 2103.17182},
+  year={2021}
+}
+```
