@@ -105,7 +105,7 @@ class AdaPNM(Optimizer):
                     exp_avg, neg_exp_avg = state['neg_exp_avg'], state['exp_avg']
                 
                 exp_avg.mul_(beta1**2).add_(grad, alpha=1 - beta1**2)
-                noise_norm = math.sqrt((1+beta2) ** 2 + beta2 ** 2)
+                noise_norm = math.sqrt((1+beta3) ** 2 + beta3 ** 2)
                 
                 exp_avg_sq.mul_(beta2).addcmul_(grad, grad, value=1 - beta2)
                 if amsgrad:
