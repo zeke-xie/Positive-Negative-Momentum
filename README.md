@@ -46,10 +46,16 @@ PNM versus conventional Momentum. We report the mean and the standard deviations
 If you use Positive-Negative Momentum in your work, please cite
 
 ```
-@article{xie2021positive,
-  title={Positive-Negative Momentum: Manipulating Stochastic Gradient Noise to Improve Generalization},
-  author={Xie, Zeke and Yuan, li and Zhu, Zhanxing and Sugiyama, Masashi},
-  journal={International Conference on Machine Learning},
-  year={2021}
+@InProceedings{xie2021positive,
+  title = 	 {Positive-Negative Momentum: Manipulating Stochastic Gradient Noise to Improve Generalization},
+  author =       {Xie, Zeke and Yuan, Li and Zhu, Zhanxing and Sugiyama, Masashi},
+  booktitle = 	 {Proceedings of the 38th International Conference on Machine Learning},
+  pages = 	 {11448--11458},
+  year = 	 {2021},
+  editor = 	 {Meila, Marina and Zhang, Tong},
+  volume = 	 {139},
+  series = 	 {Proceedings of Machine Learning Research},
+  month = 	 {18--24 Jul},
+  publisher =    {PMLR},
 }
 ```
