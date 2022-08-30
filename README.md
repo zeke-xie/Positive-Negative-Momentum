@@ -2,7 +2,7 @@
 The official PyTorch Implementations of Positive-Negative Momentum Optimizers.
 
 The algortihms are proposed in our paper: 
-[Positive-Negative Momentum: Manipulating Stochastic Gradient Noise to Improve Generalization](https://arxiv.org/abs/2103.17182), which is accepted by ICML 2021. We fixed several notation typos in the updated arxiv version.
+[Positive-Negative Momentum: Manipulating Stochastic Gradient Noise to Improve Generalization](https://arxiv.org/abs/2103.17182), which is accepted by ICML 2021. In the updated arxiv version, we fixed several notation typos that appeared in the ICML version due to the notation conflicts.
 
 
 # Why Positive-Negative Momentum?
